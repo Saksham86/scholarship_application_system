@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+broadcast chan homePage,log_out;
+broadcast chan apply_scholarship,need_scholar,merit_scholar;
+broadcast chan transcript_request,transcript,transcript_sent,personal_Details;
+broadcast chan signin_req,signin_success,signin_fail;
+
+
+
+
+
+struct { int id;int CGPA; bool applied; bool awarded;bool needValid; } studentDatabase[2] = {{ 0,9,false,false ,false},{1,8,false,false,false}};
+
+struct { int id;int CGPA; bool applied; bool awarded;bool needValid; } queue[3] ;
+
+void addStudent(int id,int CGPA, bool need){
+    struct { int id;int CGPA; bool applied; bool awarded;bool needValid; } student = { id,CGPA,false,false ,need};
+    
+    queue[id]=student;
+}
+
+
+//struct { int id;int CGPA; bool applied; bool awarded;bool needValid ;} input_student={0,0,false,false,false};
+
+
+
+void rotate(){
+    struct { int id;int CGPA; bool applied; bool awarded;bool needValid; } temp=queue[0];
+    struct { int id;int CGPA; bool applied; bool awarded;bool needValid; } temp2=queue[1];
+    struct { int id;int CGPA; bool applied; bool awarded;bool needValid; } temp3=queue[2];
+    queue[0]=temp2;
+    queue[1]=temp3;
+    queue[2]=temp;  
+
+}
+
+/*void setStudent(){
+    input_student=queue[0];
+}*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</declaration>
+	<template>
+		<name x="5" y="5">Student</name>
+		<parameter>int id,int CGPA,bool need_valid</parameter>
+		<declaration>// Place local declarations here.
+
+bool queueCheck(){
+    if(id==queue[0].id){
+        return true;
+    }
+    return false;
+}
+    
+
+</declaration>
+		<location id="id0" x="-510" y="-8">
+			<name x="-569" y="-68">Sign_In_Page</name>
+			<urgent/>
+		</location>
+		<location id="id1" x="-238" y="0">
+			<name x="-248" y="-34">Waiting</name>
+		</location>
+		<location id="id2" x="76" y="17">
+			<name x="66" y="-17">Auth_Check</name>
+		</location>
+		<location id="id3" x="382" y="17">
+			<name x="340" y="51">Portal</name>
+		</location>
+		<location id="id4" x="739" y="8">
+			<name x="729" y="-26">Details</name>
+		</location>
+		<location id="id5" x="518" y="187">
+			<name x="484" y="212">Transcript</name>
+		</location>
+		<location id="id6" x="-756" y="-17">
+			<name x="-766" y="-51">START</name>
+			<urgent/>
+		</location>
+		<location id="id7" x="408" y="-187">
+			<name x="348" y="-212">Scholar_HomePage</name>
+		</location>
+		<location id="id8" x="119" y="-374">
+			<name x="109" y="-408">Merit_Cum_Need</name>
+		</location>
+		<location id="id9" x="671" y="-374">
+			<name x="661" y="-408">Merit</name>
+		</location>
+		<location id="id10" x="603" y="144">
+			<name x="593" y="110">Transcript_view</name>
+		</location>
+		<init ref="id6"/>
+		<transition id="id11">
+			<source ref="id10"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="484" y="68">homePage!</label>
+		</transition>
+		<transition id="id12">
+			<source ref="id5"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="536" y="148">transcript_sent?</label>
+		</transition>
+		<transition id="id13">
+			<source ref="id9"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="544" y="-187">homePage!</label>
+		</transition>
+		<transition id="id14">
+			<source ref="id8"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="178" y="-195">homePage!</label>
+		</transition>
+		<transition id="id15">
+			<source ref="id7"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="476" y="-314">merit_scholar!</label>
+		</transition>
+		<transition id="id16">
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="238" y="-323">need_scholar!</label>
+		</transition>
+		<transition id="id17">
+			<source ref="id3"/>
+			<target ref="id7"/>
+			<label kind="guard" x="395" y="-119">!queue[0].applied</label>
+			<label kind="synchronisation" x="331" y="-136">apply_scholarship!</label>
+		</transition>
+		<transition id="id18">
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-119" y="17">queueCheck()</label>
+			<label kind="synchronisation" x="-161" y="-25">signin_req!</label>
+		</transition>
+		<transition id="id19">
+			<source ref="id6"/>
+			<target ref="id0"/>
+			<label kind="assignment" x="-738" y="-12">addStudent(id,CGPA,need_valid)</label>
+		</transition>
+		<transition id="id20">
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-204" y="-136">signin_fail?</label>
+			<nail x="17" y="-68"/>
+			<nail x="-111" y="-119"/>
+			<nail x="-289" y="-110"/>
+			<nail x="-459" y="-85"/>
+		</transition>
+		<transition id="id21">
+			<source ref="id4"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="713" y="29">homePage!</label>
+			<nail x="688" y="85"/>
+			<nail x="629" y="68"/>
+			<nail x="569" y="34"/>
+			<nail x="535" y="34"/>
+		</transition>
+		<transition id="id22">
+			<source ref="id3"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="59" y="161">log_out!</label>
+			<nail x="398" y="98"/>
+			<nail x="364" y="132"/>
+			<nail x="313" y="149"/>
+			<nail x="236" y="158"/>
+			<nail x="143" y="166"/>
+			<nail x="-10" y="158"/>
+			<nail x="-154" y="141"/>
+			<nail x="-299" y="115"/>
+			<nail x="-392" y="90"/>
+			<nail x="-452" y="64"/>
+			<nail x="-469" y="56"/>
+			<nail x="-494" y="39"/>
+			<nail x="-503" y="13"/>
+		</transition>
+		<transition id="id23">
+			<source ref="id3"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="425" y="136">transcript!</label>
+		</transition>
+		<transition id="id24">
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="569" y="-17">personal_Details!</label>
+		</transition>
+		<transition id="id25">
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="221" y="-8">signin_success?</label>
+		</transition>
+		<transition id="id26">
+			<source ref="id0"/>
+			<target ref="id1"/>
+		</transition>
+	</template>
+	<template>
+		<name>Portal</name>
+		<declaration>struct { int id;int CGPA; bool applied; bool awarded;bool needValid ;} details(){
+    return queue[0];
+}</declaration>
+		<location id="id27" x="-578" y="0">
+			<name x="-654" y="17">P_IdleState</name>
+		</location>
+		<location id="id28" x="-144" y="8" color="#00ff00">
+			<name x="-187" y="25">Portal_AuthCheck</name>
+		</location>
+		<location id="id29" x="229" y="17">
+			<name x="153" y="-17">HomePage</name>
+		</location>
+		<location id="id30" x="212" y="306" color="#ffff00">
+			<name x="85" y="340">Acad_Transcript_Request</name>
+		</location>
+		<location id="id31" x="544" y="17" color="#ffff00">
+			<name x="476" y="-17">Personal_Details</name>
+		</location>
+		<location id="id32" x="357" y="263">
+			<name x="349" y="297">Transcript_View</name>
+		</location>
+		<location id="id33" x="246" y="-161">
+			<name x="236" y="-195">Scholarship</name>
+		</location>
+		<init ref="id27"/>
+		<transition id="id34">
+			<source ref="id27"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="-425" y="-17">signin_req?</label>
+		</transition>
+		<transition id="id35">
+			<source ref="id33"/>
+			<target ref="id29"/>
+			<label kind="synchronisation" x="408" y="-102">homePage?</label>
+			<nail x="416" y="-136"/>
+			<nail x="416" y="-51"/>
+		</transition>
+		<transition id="id36">
+			<source ref="id29"/>
+			<target ref="id33"/>
+			<label kind="guard" x="187" y="-119">!queue[0].applied</label>
+			<label kind="synchronisation" x="195" y="-85">apply_scholarship?</label>
+		</transition>
+		<transition id="id37">
+			<source ref="id32"/>
+			<target ref="id29"/>
+			<label kind="synchronisation" x="255" y="161">homePage?</label>
+		</transition>
+		<transition id="id38">
+			<source ref="id30"/>
+			<target ref="id32"/>
+			<label kind="synchronisation" x="221" y="255">transcript_sent?</label>
+		</transition>
+		<transition id="id39">
+			<source ref="id29"/>
+			<target ref="id27"/>
+			<label kind="synchronisation" x="-212" y="204">log_out?</label>
+			<label kind="assignment" x="-195" y="119">queue[0].applied=false,
+queue[0].awarded=false,
+rotate()</label>
+			<nail x="0" y="187"/>
+			<nail x="-153" y="195"/>
+			<nail x="-314" y="170"/>
+			<nail x="-433" y="136"/>
+			<nail x="-544" y="68"/>
+		</transition>
+		<transition id="id40">
+			<source ref="id28"/>
+			<target ref="id27"/>
+			<label kind="synchronisation" x="-527" y="-221">signin_fail?</label>
+			<label kind="assignment" x="-501" y="-187">rotate()</label>
+			<nail x="-136" y="-204"/>
+			<nail x="-586" y="-204"/>
+		</transition>
+		<transition id="id41">
+			<source ref="id31"/>
+			<target ref="id29"/>
+			<label kind="synchronisation" x="467" y="153">homePage?</label>
+			<nail x="484" y="195"/>
+			<nail x="348" y="153"/>
+		</transition>
+		<transition id="id42">
+			<source ref="id29"/>
+			<target ref="id30"/>
+			<label kind="synchronisation" x="127" y="187">transcript?</label>
+		</transition>
+		<transition id="id43">
+			<source ref="id29"/>
+			<target ref="id31"/>
+			<label kind="synchronisation" x="314" y="-8">personal_Details?</label>
+			<label kind="assignment" x="365" y="17">details()</label>
+		</transition>
+		<transition id="id44">
+			<source ref="id28"/>
+			<target ref="id29"/>
+			<label kind="synchronisation" x="-93" y="-17">signin_success?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Authentication</name>
+		<declaration>bool authorize(){
+    
+    if(queue[0].id==0 || queue[0].id==1){
+        return true;
+    }
+    return false;
+}</declaration>
+		<location id="id45" x="0" y="0">
+			<name x="-85" y="-34">Idle</name>
+		</location>
+		<location id="id46" x="459" y="0">
+			<urgent/>
+		</location>
+		<location id="id47" x="238" y="-170">
+			<urgent/>
+		</location>
+		<location id="id48" x="238" y="153">
+			<urgent/>
+		</location>
+		<init ref="id45"/>
+		<transition id="id49">
+			<source ref="id48"/>
+			<target ref="id45"/>
+			<label kind="synchronisation" x="8" y="85">signin_fail!</label>
+		</transition>
+		<transition id="id50">
+			<source ref="id46"/>
+			<target ref="id48"/>
+			<label kind="guard" x="306" y="110">!authorize()</label>
+		</transition>
+		<transition id="id51">
+			<source ref="id47"/>
+			<target ref="id45"/>
+			<label kind="synchronisation" x="0" y="-119">signin_success!</label>
+		</transition>
+		<transition id="id52">
+			<source ref="id46"/>
+			<target ref="id47"/>
+			<label kind="guard" x="306" y="-110">authorize()</label>
+		</transition>
+		<transition id="id53">
+			<source ref="id45"/>
+			<target ref="id46"/>
+			<label kind="synchronisation" x="187" y="-25">signin_req?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Academic_Server</name>
+		<declaration>int transcriptShow(){
+    return queue[0].CGPA;
+}</declaration>
+		<location id="id54" x="-773" y="25">
+			<name x="-783" y="-9">idle</name>
+		</location>
+		<location id="id55" x="-586" y="25">
+			<name x="-612" y="-8">Fetch</name>
+			<urgent/>
+		</location>
+		<location id="id56" x="-374" y="34">
+			<name x="-357" y="25">Transcript_Shown</name>
+		</location>
+		<init ref="id54"/>
+		<transition id="id57">
+			<source ref="id56"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="-544" y="178">homePage?</label>
+			<nail x="-459" y="170"/>
+			<nail x="-629" y="170"/>
+			<nail x="-739" y="136"/>
+			<nail x="-773" y="85"/>
+		</transition>
+		<transition id="id58">
+			<source ref="id55"/>
+			<target ref="id56"/>
+			<label kind="synchronisation" x="-527" y="0">transcript_sent!</label>
+			<label kind="assignment" x="-544" y="42">transcriptShow()</label>
+		</transition>
+		<transition id="id59">
+			<source ref="id54"/>
+			<target ref="id55"/>
+			<label kind="synchronisation" x="-755" y="8">transcript?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Scholarship_Approval_Committee</name>
+		<parameter>const int merit_criteria,const int need_criteria</parameter>
+		<declaration>bool meritAwarded(){
+    if(queue[0].CGPA&gt;=merit_criteria){
+        return true;    
+    }
+    return false;
+}
+
+
+bool needAwarded(){
+    if(queue[0].needValid==false){
+        return false;
+    }
+    if(queue[0].CGPA&gt;=need_criteria){
+        return true;
+    }
+    return false;
+}</declaration>
+		<location id="id60" x="-875" y="-170">
+			<name x="-935" y="-187">Idle</name>
+			<urgent/>
+		</location>
+		<location id="id61" x="-646" y="-170">
+		</location>
+		<location id="id62" x="-501" y="-306">
+			<name x="-511" y="-340">merit_cum_need</name>
+			<urgent/>
+		</location>
+		<location id="id63" x="-501" y="-25">
+			<name x="-511" y="-59">merit</name>
+			<urgent/>
+		</location>
+		<init ref="id60"/>
+		<transition id="id64">
+			<source ref="id63"/>
+			<target ref="id60"/>
+			<label kind="guard" x="-756" y="76">!meritAwarded()</label>
+			<nail x="-578" y="0"/>
+			<nail x="-714" y="68"/>
+			<nail x="-892" y="-76"/>
+		</transition>
+		<transition id="id65">
+			<source ref="id62"/>
+			<target ref="id60"/>
+			<label kind="guard" x="-816" y="-433">needAwarded()</label>
+			<label kind="assignment" x="-748" y="-374">queue[0].awarded=true</label>
+			<nail x="-620" y="-323"/>
+			<nail x="-790" y="-425"/>
+			<nail x="-875" y="-331"/>
+		</transition>
+		<transition id="id66">
+			<source ref="id63"/>
+			<target ref="id60"/>
+			<label kind="guard" x="-807" y="-76">meritAwarded()</label>
+			<label kind="assignment" x="-731" y="-42">queue[0].awarded=true</label>
+			<nail x="-705" y="-68"/>
+		</transition>
+		<transition id="id67">
+			<source ref="id62"/>
+			<target ref="id60"/>
+			<label kind="guard" x="-765" y="-306">!needAwarded()</label>
+			<nail x="-714" y="-289"/>
+		</transition>
+		<transition id="id68">
+			<source ref="id61"/>
+			<target ref="id63"/>
+			<label kind="synchronisation" x="-569" y="-127">merit_scholar?</label>
+			<label kind="assignment" x="-569" y="-110">queue[0].applied=true</label>
+		</transition>
+		<transition id="id69">
+			<source ref="id61"/>
+			<target ref="id62"/>
+			<label kind="synchronisation" x="-586" y="-246">need_scholar?</label>
+			<label kind="assignment" x="-586" y="-229">queue[0].applied=true</label>
+		</transition>
+		<transition id="id70">
+			<source ref="id60"/>
+			<target ref="id61"/>
+			<label kind="synchronisation" x="-833" y="-187">apply_scholarship?</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+
+student1=Student(0,9,false);
+student2=Student(1,7,true);
+student3=Student(2,7,true);
+portal=Portal();
+scholar=Scholarship_Approval_Committee(9,7);
+server=Academic_Server();
+auth=Authentication();
+
+
+// List one or more processes to be composed into a system.
+system student1,student2,student3,portal,auth,server,scholar;
+</system>
+	<queries>
+		<query>
+			<formula>A[] (not deadlock)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2024-11-25 21:48:39 +0530">
+			</result>
+		</query>
+		<query>
+			<formula>A&lt;&gt; (server.Fetch imply ( student2.Transcript_view or student1.Transcript_view) )</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2024-11-29 19:37:58 +0530">
+			</result>
+		</query>
+		<query>
+			<formula>A[] not(portal.Personal_Details and portal.Scholarship)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2024-11-25 21:52:01 +0530">
+			</result>
+		</query>
+		<query>
+			<formula>A&lt;&gt; ( student1.Portal)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>A&lt;&gt; (portal.Acad_Transcript_Request imply server.Transcript_Shown)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2024-11-26 20:50:30 +0530">
+			</result>
+		</query>
+		<query>
+			<formula>A&lt;&gt; (student1.Merit imply student1.Portal)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2024-11-25 22:04:23 +0530">
+			</result>
+		</query>
+		<query>
+			<formula>A&lt;&gt; not(student3.Portal)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2024-11-26 20:50:29 +0530">
+			</result>
+		</query>
+		<query>
+			<formula>A&lt;&gt; not(student1.Portal and student2.Portal)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2024-11-26 20:50:28 +0530">
+			</result>
+		</query>
+	</queries>
+</nta>
